@@ -224,7 +224,9 @@ def fazer_pedido():
 
 @app.route('/atualizarstatus/', methods=['POST'])
 def atualizar_status():
-    webhook = request.get_json()['webhooks'][0]
+    webhook = request.get_json()
+    print(prajson(webhook))
+    '''
     id = webhook['resourceId']
     event = webhook['event']
     data = webhook['sentAt']
@@ -259,6 +261,7 @@ def atualizar_status():
                     peds[i].dadosjson = prajson(dicio)
 
     session.commit()
+    '''
 
 # -----------------------------------------------------------------------
 
