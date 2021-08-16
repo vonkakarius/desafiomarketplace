@@ -225,43 +225,34 @@ def fazer_pedido():
 @app.route('/atualizarstatus/', methods=['POST'])
 def atualizar_status():
     webhook = request.get_json()
-    print(prajson(webhook))
-    '''
-    id = webhook['resourceId']
-    event = webhook['event']
-    data = webhook['sentAt']
-    status = event.split('.')[1]
-    peds = session.query(Pedido).all()
 
-    # Status de Pagamento
-    if id.startswith('PAY'):
-        for i in range(len(peds)):
-            dicio = pradicio(peds[i].dadosjson)
-            if dicio['payments'][0]['id'] == id:
-                flag = True
-                for evento in dicio['payments'][0]['events']:
-                    if evento['createdAt'] > data:
-                        flag = False
-                if flag:
-                    dicio['payments'][0]['status'] = status
-                    dicio['payments'][0]['events'].append({
-                        'type': event,
-                        'createdAt': data
-                    })
-                    peds[i].dadosjson = prajson(dicio)
+    try:
+        orderId = webhook['resource']['order']['id']
+        order = requests.get(
+            f'https://sandbox.moip.com.br/v2/orders/{orderId}', auth=(TOKEN, KEY)).json()
 
-    # Status de Pedido
-    elif id.startswith('ORD'):
-        for i in range(len(peds)):
-            dicio = pradicio(peds[i].dadosjson)
-            if dicio['id'] == id:
-                if dicio['updatedAt'] <= data:
-                    dicio['updatedAt'] = data
-                    dicio['status'] = status
-                    peds[i].dadosjson = prajson(dicio)
+        pedidos = session.query(Pedido).all()
+        for pedido in pedidos:
+            if pedido.id == orderId:
+                pedido.dadosjson = prajson(order)
+                session.commit()
+        
+    except Exception as e:
+        try:
+            paymentId = webhook['resourceId']
+            pedidos = session.query(Pedido).all()
+            for pedido in pedidos:
+                dicio = pradicio(pedido.dadosjson)
+                orderId = dicio['id']
+                if dicio['payments']:
+                    if dicio['payments'][0]['id'] == paymentId:
+                        order = requests.get(
+            f'https://sandbox.moip.com.br/v2/orders/{orderId}', auth=(TOKEN, KEY)).json()
+                        pedido.dadosjson = prajson(order)
+                        session.commit()
 
-    session.commit()
-    '''
+        except Exception as e:
+            print(f'Erro: {e}')
 
 # -----------------------------------------------------------------------
 
