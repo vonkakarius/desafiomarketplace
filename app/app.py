@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------
-# Agregador de Links
+# Desafio Marketplace
 # -----------------------------------------------------------------------
 
 import json
@@ -11,6 +11,8 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from flask import Flask, redirect, url_for, request, render_template, jsonify
 
+# -----------------------------------------------------------------------
+
 app = Flask(__name__)
 app.secret_key = '95959595'
 TOKEN = 'ERMBFUWIQA1ZJQNR2XXVJRTBUMIL5EDD'
@@ -21,6 +23,8 @@ Base = declarative_base()
 engine = create_engine('postgresql://pjytwiewxwjiok:592c38d4744253d58c37b14c7be1abf2f790dce557cf46875a991243d4451312@ec2-54-167-152-185.compute-1.amazonaws.com:5432/d3h8ij8ug1bedm')
 Session = sessionmaker(bind=engine)
 session = Session()
+
+# -----------------------------------------------------------------------
 
 pradicio = lambda jsontext: json.loads(jsontext)
 prajson = lambda dicio: json.dumps(dicio, indent=4)
@@ -208,7 +212,40 @@ def fazer_pedido():
 
 @app.route('/atualizarstatus/', methods=['POST'])
 def atualizar_status():
-    pass
+    webhook = request.get_json()
+    id = webhook['resourceId']
+    event = webhook['event']
+    data = webhook['sentAt']
+    status = event.split('.')[1]
+    peds = session.query(Pedido).all()
+
+    # Status de Pagamento
+    if id.startswith('PAY'):
+        for i in range(len(peds)):
+            dicio = pradicio(peds[i].dadosjson)
+            if dicio['payments'][0]['id'] == id:
+                flag = True
+                for evento in dicio['payments'][0]['events']:
+                    if evento['createdAt'] > data: flag = False
+                if flag:
+                    dicio['payments'][0]['status'] = status
+                    dicio['payments'][0]['events'].append({
+                        'type': event,
+                        'createdAt': data
+                    })
+                    peds[i].dadosjson = prajson(dicio)
+    
+    # Status de Pedido
+    elif id.startswith('ORD'):
+        for i in range(len(peds)):
+            dicio = pradicio(peds[i].dadosjson)
+            if dicio['id'] == id:
+                if dicio['updatedAt'] <= data:
+                    dicio['updatedAt'] = data
+                    dicio['status'] = status
+                    peds[i].dadosjson = prajson(dicio)
+
+    session.commit()
 
 # -----------------------------------------------------------------------
 
