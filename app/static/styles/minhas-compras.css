@@ -1,0 +1,199 @@
+@import url("../styles/padrao.css");
+
+body {
+  background-color: var(--bg-destaque);
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  color: var(--texto);
+  overflow-y: scroll;
+  content: "";
+  clear: both;
+  display: table;
+}
+
+/* Menu */
+
+.menu {
+  width: 100%;
+  height: fit-content;
+  position: fixed;
+  padding: 0px 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--primaria);
+  color: white;
+  z-index: 1;
+  box-shadow: 0 5px 8px rgba(0, 0, 0, 0.05);
+}
+
+.menu-direita {
+  display: flex;
+}
+
+.menu a {
+  height: 100%;
+  padding: 23px;
+  text-decoration: none;
+  color: white;
+  font-size: 15px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.menu a:hover,
+.menu a.menu-aba-atual {
+  background-color: white;
+  color: var(--primaria-hover);
+}
+
+/* Cabeçalhos */
+
+h1 {
+  font-size: 20px;
+  margin: 20px 0;
+}
+
+h2 {
+  font-size: 20px;
+  color: var(--secundaria);
+}
+
+/* Conteúdo */
+
+.pagina {
+  height: 100%;
+  width: 100%;
+  padding-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.conteudo {
+  width: 750px;
+  margin-top: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+.caixa {
+  width: 100%;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px;
+  gap: 10px;
+  box-shadow: 0 5px 8px rgba(0, 0, 0, 0.1);
+}
+
+#caixa-cabecalho {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.compras-cabecalho {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  gap: 5px;
+}
+
+.icone {
+  width: 30px;
+}
+
+/* Lista de Compras */
+
+.compra {
+  padding: 40px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  font-size: 15px;
+}
+
+.cabecalho-pedido {
+  color: var(--secundaria);
+  font-size: 20px;
+}
+
+.pedido-info {
+  margin-top: -5px;
+  font-size: 15px;
+  color: var(--primaria);
+}
+
+.pedido-corpo {
+  width: 100%;
+  display: flex;
+  margin: 20px 0;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 50px;
+}
+
+.pedido-corpo-detalhes {
+  width: 35%;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.detalhe-titulo {
+  font-weight: bold;
+  color: var(--secundaria);
+  margin-bottom: 4px;
+}
+
+.pedido-corpo-listagem {
+  width: 65%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.lista-itens {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.compra-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 10px;
+  box-shadow: 0 0px 3px rgba(97, 47, 47, 0.5);
+}
+
+.prodimg {
+  height: 40px;
+}
+
+.compra-item-info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.compra-item-nome {
+  font-weight: bold;
+}
+
+.resumo-pedido p {
+  color: var(--secundaria);
+  font-weight: bold;
+  text-align: right;
+}

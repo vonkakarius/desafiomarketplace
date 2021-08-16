@@ -1,0 +1,106 @@
+/* Cores */
+:root {
+  --bg-destaque: #f4f4f4;
+  --primaria: #2ec4b6;
+  --primaria-hover: #49dacb;
+  --secundaria: #CD5334;
+  --secundaria-hover: #d87258;
+  --terciaria: #e9cac5;
+  --texto: #2e282a;
+}
+
+/* Reset de configurações */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Fundo */
+html {
+  height: 100%;
+  font-size: 20px;
+  font-family: Ubuntu, sans-serif;
+  color: white;
+}
+
+/* Caixa */
+.caixa {
+  height: fit-content;
+  padding: 50px 40px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: transparent;
+  border-radius: 5px;
+}
+
+/* Formulários */
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: 15px;
+}
+
+form,
+.form {
+  width: 100%;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Campos de texto */
+input {
+  width: 100%;
+  background-color: var(--bg-claro);
+  padding: 15px 20px;
+  color: white;
+  border: transparent;
+  border-radius: 2px;
+}
+
+input:focus {
+  outline-width: 0px;
+  outline-color: var(--bt-hover);
+  outline-style: solid;
+}
+
+::placeholder {
+  color: #c2c2c2;
+}
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+/* Botões */
+.botao {
+  width: 100%;
+  padding: 0.8rem 0;
+  background-color: var(--primaria);
+  transition: background 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: transparent;
+  border-radius: 5px;
+  color: white;
+  font-size: 15px;
+  font-weight: bold;
+  text-decoration: none;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.botao:hover {
+  background-color: var(--primaria-hover);
+}

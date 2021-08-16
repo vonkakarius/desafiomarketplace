@@ -1,0 +1,315 @@
+@import url("../styles/padrao.css");
+
+body {
+  background-color: var(--bg-destaque);
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  color: var(--texto);
+  overflow-y: scroll;
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.menu {
+  width: 100%;
+  height: fit-content;
+  position: fixed;
+  padding: 0px 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--primaria);
+  color: white;
+  z-index: 1;
+  box-shadow: 0 5px 8px rgba(0, 0, 0, 0.05);
+}
+
+.menu-direita {
+  display: flex;
+}
+
+.menu a {
+  height: 100%;
+  padding: 23px;
+  text-decoration: none;
+  color: white;
+  font-size: 15px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.menu a:hover,
+.menu a.menu-aba-atual {
+  background-color: white;
+  color: var(--primaria-hover);
+}
+
+h1 {
+  font-size: 20px;
+  margin: 20px 0;
+}
+
+h2 {
+  font-size: 20px;
+  color: var(--secundaria);
+}
+
+.pagina {
+  width: 100%;
+  display: flex;
+  margin-top: 60px;
+}
+
+.produtos {
+  width: 70%;
+  display: flex;
+  padding: 40px;
+  justify-content: left;
+  flex-wrap: wrap;
+  font-size: 16px;
+  gap: 20px;
+}
+
+div.caixa {
+  background-color: white;
+  width: 204px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px;
+  gap: 10px;
+  box-shadow: 0 5px 8px rgba(0, 0, 0, 0.1);
+}
+
+.prodimg {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+p.prodnome {
+  font-weight: bold;
+}
+
+p.preco {
+  font-size: 25px;
+  margin-bottom: 15px;
+}
+
+p.vendedor {
+  font-size: 13px;
+  margin-bottom: 5px;
+}
+
+span.vendnome {
+  font-weight: bold;
+}
+
+.contador {
+  display: flex;
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.botao_cont {
+  padding: 12px 0;
+  font-size: 15px;
+  background-color: var(--secundaria);
+  border-radius: 0;
+}
+
+.botao_cont:hover {
+  background-color: var(--secundaria-hover);
+}
+
+.botao_menos {
+  border-radius: 10px 0 0 10px;
+}
+
+.botao_mais {
+  border-radius: 0 10px 10px 0;
+}
+
+input.qtd {
+  width: 170%;
+  padding: 0;
+  border-radius: 0;
+  background-color: var(--terciaria);
+  text-align: center;
+  font-size: 17px;
+  color: var(--texto);
+}
+
+.carrinho {
+  width: 30%;
+  height: 100%;
+  position: fixed;
+  top: 60px;
+  right: 0;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  gap: 20px;
+}
+
+.carrinho-cabecalho {
+  display: flex;
+  height: fit-content;
+  align-items: center;
+  gap: 5px;
+}
+
+.icone {
+  width: 30px;
+}
+
+.compras {
+  height: 62%;
+  padding: 7px;
+  display: flex;
+  flex-direction: column;
+  font-size: 15px;
+  gap: 10px;
+  overflow-y: auto;
+  overflow-x: unset;
+}
+
+.mensagem-carrinho-vazio {
+  font-size: 15px;
+  line-height: 150%;
+  z-index: 1;
+}
+
+/* Scroll */
+.compras::-webkit-scrollbar-track
+.box-pagamento-blocos::-webkit-scrollbar-track {
+  background-color: #F4F4F4;
+  margin: 20px 0;
+}
+.compras::-webkit-scrollbar,
+.box-pagamento-blocos::-webkit-scrollbar {
+  width: 4px;
+  background: #F4F4F4;
+  margin: 20px 0;
+}
+.compras::-webkit-scrollbar-thumb,
+.box-pagamento-blocos::-webkit-scrollbar-thumb {
+  background: var(--secundaria-hover);
+  margin: 20px 0;
+}
+
+.compra-item {
+  display: flex;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  align-items: center;
+}
+
+.compra-item img {
+  height: 50px;
+}
+
+.compra-item-info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.compra-item-nome {
+  font-weight: bold;
+}
+
+.nota-total p {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: right;
+  margin-bottom: 25px;
+}
+
+.botao-pedido {
+  box-shadow: 0 5px 8px rgba(0, 0, 0, 0.2);
+}
+
+.apagao {
+  display: none;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
+
+.box-pagamento {
+  width: 550px;
+  height: fit-content;
+  padding: 35px 40px; 
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--bg-destaque);
+  z-index: 2;
+  border-radius: 10px;
+  color: var(--texto);
+  display: flex;
+  flex-direction: column;
+}
+
+.box-pagamento h2 {
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 18px;
+  color: var(--primaria);
+  text-transform: uppercase;
+}
+
+.box-pagamento-blocos {
+  overflow-y: scroll;
+  overflow-x: unset;
+  padding: 1px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.bloco-info {
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  margin: 7px 0;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  align-items: flex-start;
+  justify-content: center;
+  font-size: 15px;
+  gap: 10px;
+}
+
+.bloco-info h3 {
+  font-size: 16px;
+  text-transform: uppercase;
+  color: var(--secundaria);
+}
+
+.bloco-info-detalhe {
+  font-size: 12px;
+  font-weight: bold;
+  color: #444;
+}
+
+.bloco-info-pagamento {
+  line-height: 150%;
+}
+
+.botao-compra {
+  margin: 30px 0 0;
+  box-shadow: 0 5px 8px rgba(0, 0, 0, 0.2);
+}
