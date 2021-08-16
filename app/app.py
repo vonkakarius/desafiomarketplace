@@ -253,6 +253,8 @@ def atualizar_status():
 
         except Exception as e:
             print(f'Erro: {e}')
+    
+    return 'Post finalizado'
 
 # -----------------------------------------------------------------------
 
