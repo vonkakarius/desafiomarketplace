@@ -114,8 +114,8 @@ async function fazerPedido() {
     "items": [],
     "checkoutPreferences": {
       "redirectUrls": {
-        "urlSuccess": 'http://localhost:5000' + "/minhascompras",
-        "urlFailure": 'http://localhost:5000' + "/minhascompras"
+        "urlSuccess": 'https://desafiomarketplace.herokuapp.com/minhascompras',
+        "urlFailure": 'https://desafiomarketplace.herokuapp.com/minhascompras'
       }
     },
     "customer": {
