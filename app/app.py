@@ -20,34 +20,39 @@ KEY = 'AH2WXPKKQ5TVPGO0CZTRHNGLLWSYSK1ZACLSMKLW'
 HASH = 'Basic RVJNQkZVV0lRQTFaSlFOUjJYWFZKUlRCVU1JTDVFREQ6QUgyV1hQS0tRNVRWUEdPMENaVFJITkdMTFdTWVNLMVpBQ0xTTUtMVw=='
 
 Base = declarative_base()
-engine = create_engine('postgresql://pjytwiewxwjiok:592c38d4744253d58c37b14c7be1abf2f790dce557cf46875a991243d4451312@ec2-54-167-152-185.compute-1.amazonaws.com:5432/d3h8ij8ug1bedm')
+engine = create_engine(
+    'postgresql://pjytwiewxwjiok:592c38d4744253d58c37b14c7be1abf2f790dce557cf46875a991243d4451312@ec2-54-167-152-185.compute-1.amazonaws.com:5432/d3h8ij8ug1bedm')
 Session = sessionmaker(bind=engine)
 session = Session()
 
 # -----------------------------------------------------------------------
 
-pradicio = lambda jsontext: json.loads(jsontext)
-prajson = lambda dicio: json.dumps(dicio, indent=4)
+
+def pradicio(jsontext): return json.loads(jsontext)
+def prajson(dicio): return json.dumps(dicio, indent=4)
 
 # -----------------------------------------------------------------------
+
 
 class Produto(Base):
     __tablename__ = 'produtos'
     id = Column(Integer, primary_key=True)
     dadosjson = Column(String)
-    
+
     def __repr__(self):
         return f'Produto {self.id}'
+
 
 class Pedido(Base):
     __tablename__ = 'pedidos'
     id = Column(String, primary_key=True)
     dadosjson = Column(String)
-    
+
     def __repr__(self):
         return f'Pedido {self.id}'
 
 # -----------------------------------------------------------------------
+
 
 @app.route('/')
 def home():
@@ -67,7 +72,8 @@ def catalogo():
 def minhas_compras():
     try:
         orderId = request.args.get('orderId')
-        order = requests.get(f'https://sandbox.moip.com.br/v2/orders/{orderId}', auth=(TOKEN, KEY)).json()
+        order = requests.get(
+            f'https://sandbox.moip.com.br/v2/orders/{orderId}', auth=(TOKEN, KEY)).json()
 
         pedidos = session.query(Pedido).all()
         for pedido in pedidos:
@@ -88,7 +94,7 @@ def info_produtos():
     prods = session.query(Produto).all()
     for prod in prods:
         produtos.append(pradicio(prod.dadosjson))
-    
+
     return app.make_response((prajson(produtos), 200, {'Content-Type': 'application/json'}))
 
 # -----------------------------------------------------------------------
@@ -102,13 +108,14 @@ def info_cliente():
 
 # -----------------------------------------------------------------------
 
+
 @app.route('/pedidos/', methods=['GET'])
 def info_pedidos():
     pedidos = []
     peds = session.query(Pedido).all()
     for ped in peds:
         pedidos.append(pradicio(ped.dadosjson))
-    
+
     return app.make_response((jsonify(pedidos), 200, {'Content-Type': 'application/json'}))
 
 # -----------------------------------------------------------------------
@@ -156,8 +163,10 @@ def info_compras():
 
     def formatar_pagamento(metodo, parcelas):
         if metodo == 'CREDIT_CARD':
-            if parcelas > 1: return f'Cartão de Crédito ({parcelas}×)'
-            else: return f'Cartão de Crétido (à vista)'
+            if parcelas > 1:
+                return f'Cartão de Crédito ({parcelas}×)'
+            else:
+                return f'Cartão de Crétido (à vista)'
         elif metodo == 'BOLETO':
             return 'Boleto'
         elif metodo == 'ONLINE_BANK_DEBIT':
@@ -190,6 +199,7 @@ def info_compras():
 
 # -----------------------------------------------------------------------
 
+
 @app.route('/fazerpedido/', methods=['POST'])
 def fazer_pedido():
     # Processa pedido
@@ -201,7 +211,8 @@ def fazer_pedido():
         'Content-Type': 'application/json',
         'Authorization': HASH
     }
-    r = requests.post('https://sandbox.moip.com.br/v2/orders/', data=prajson(pedido), headers=headers)
+    r = requests.post('https://sandbox.moip.com.br/v2/orders/',
+                      data=prajson(pedido), headers=headers)
     pedido = r.json()
     session.add(Pedido(id=pedido['id'], dadosjson=prajson(pedido)))
 
@@ -210,9 +221,10 @@ def fazer_pedido():
 
 # -----------------------------------------------------------------------
 
+
 @app.route('/atualizarstatus/', methods=['POST'])
 def atualizar_status():
-    webhook = request.get_json()
+    webhook = request.get_json()['webhooks'][0]
     id = webhook['resourceId']
     event = webhook['event']
     data = webhook['sentAt']
@@ -226,7 +238,8 @@ def atualizar_status():
             if dicio['payments'][0]['id'] == id:
                 flag = True
                 for evento in dicio['payments'][0]['events']:
-                    if evento['createdAt'] > data: flag = False
+                    if evento['createdAt'] > data:
+                        flag = False
                 if flag:
                     dicio['payments'][0]['status'] = status
                     dicio['payments'][0]['events'].append({
@@ -234,7 +247,7 @@ def atualizar_status():
                         'createdAt': data
                     })
                     peds[i].dadosjson = prajson(dicio)
-    
+
     # Status de Pedido
     elif id.startswith('ORD'):
         for i in range(len(peds)):
@@ -248,6 +261,7 @@ def atualizar_status():
     session.commit()
 
 # -----------------------------------------------------------------------
+
 
 if __name__ == '__main__':
     '''
