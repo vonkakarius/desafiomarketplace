@@ -199,9 +199,10 @@ def atualizar_status():
         print(f'Atualização de status de pagamento, do pedido {orderId}')
     
     # Busca a versão atualizada
-    order = requests.get(f'https://sandbox.moip.com.br/v2/orders/{orderId}', auth=(TOKEN, KEY)).json()
+    order = requests.get(f'https://sandbox.moip.com.br/v2/orders/{orderId}', auth=(TOKEN, KEY))
     if order.status_code >= 400:
         return app.make_response('Falha de Obtenção do Pedido', order.status_code)
+    order = order.json()
 
     # Atualiza o banco de dados
     pedidos = session.query(Pedido).all()
