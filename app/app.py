@@ -80,6 +80,7 @@ def info_pedidos():
     peds = session.query(Pedido).all()
     for ped in peds:
         pedidos.append(pradicio(ped.dadosjson))
+    pedidos = sorted(pedidos, key=lambda p: p['createdAt'])[::-1]
 
     return app.make_response((jsonify(pedidos), 200, {'Content-Type': 'application/json'}))
 
