@@ -193,8 +193,10 @@ def atualizar_status():
     # Obtém ID do Pedido
     if 'order' in resource:
         orderId = resource['order']['id']
+        print(f'Atualização de status de pedido, do pedido {orderId}')
     elif 'payment' in resource:
         orderId = resource['payment']['_links']['order']['title']
+        print(f'Atualização de status de pagamento, do pedido {orderId}')
     
     # Busca a versão atualizada
     order = requests.get(f'https://sandbox.moip.com.br/v2/orders/{orderId}', auth=(TOKEN, KEY)).json()
@@ -206,6 +208,7 @@ def atualizar_status():
     for i, pedido in enumerate(pedidos):
         if pedido.id == orderId:
             pedidos[i].dadosjson = prajson(order)
+            print(f'Pedido {orderId} atualizado no banco de dados')
             session.commit()
     
     return app.make_response('Ok', 200)
