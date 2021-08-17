@@ -46,8 +46,8 @@ def minhas_compras():
             f'https://sandbox.moip.com.br/v2/orders/{orderId}', auth=(TOKEN, KEY)).json()
 
         pedidos = session.query(Pedido).all()
-        for i in range(len(pedidos)):
-            if pedidos[i].id == orderId:
+        for i, pedido in enumerate(pedidos):
+            if pedido.id == orderId:
                 pedidos[i].dadosjson = prajson(order)
                 session.commit()
     except Exception as e:
@@ -180,6 +180,7 @@ def fazer_pedido():
                       data=prajson(pedido), headers=headers)
     pedido = r.json()
     session.add(Pedido(id=pedido['id'], dadosjson=prajson(pedido)))
+    session.commit()
 
     # Cria resposta
     return pedido['_links']['checkout']['payCheckout']['redirectHref']
