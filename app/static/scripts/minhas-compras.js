@@ -72,7 +72,7 @@ function criarCaixaPedido(pedido) {
             <p class="compra-item-nome">${item.detail}</p>
             <p class="valor">
                 <span class="compra-item-qtd">${item.quantity}</span> ×
-                <span class="compra-item-valor">${item.price}</span> =
+                <span class="compra-item-valor">${rs(item.price)}</span> =
                 <span class="compra-item-valortotal">${rs(item.quantity * item.price)}<span>
             </p>
             </div>
