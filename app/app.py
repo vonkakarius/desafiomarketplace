@@ -7,7 +7,7 @@ import requests
 from random import random
 from sqlalchemy.orm import sessionmaker
 from flask import Flask, redirect, url_for, request, render_template, jsonify
-from banco import engine, Produto, Pedido
+from app.banco import engine, Produto, Pedido
 
 # -----------------------------------------------------------------------
 
