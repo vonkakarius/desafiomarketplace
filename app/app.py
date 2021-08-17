@@ -5,11 +5,9 @@
 import json
 import requests
 from random import random
-from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
 from flask import Flask, redirect, url_for, request, render_template, jsonify
+from banco import engine, Produto, Pedido
 
 # -----------------------------------------------------------------------
 
@@ -18,41 +16,15 @@ app.secret_key = '95959595'
 TOKEN = 'ERMBFUWIQA1ZJQNR2XXVJRTBUMIL5EDD'
 KEY = 'AH2WXPKKQ5TVPGO0CZTRHNGLLWSYSK1ZACLSMKLW'
 HASH = 'Basic RVJNQkZVV0lRQTFaSlFOUjJYWFZKUlRCVU1JTDVFREQ6QUgyV1hQS0tRNVRWUEdPMENaVFJITkdMTFdTWVNLMVpBQ0xTTUtMVw=='
-
-Base = declarative_base()
-engine = create_engine(
-    'postgresql://pjytwiewxwjiok:592c38d4744253d58c37b14c7be1abf2f790dce557cf46875a991243d4451312@ec2-54-167-152-185.compute-1.amazonaws.com:5432/d3h8ij8ug1bedm')
 Session = sessionmaker(bind=engine)
 session = Session()
 
 # -----------------------------------------------------------------------
 
-
 def pradicio(jsontext): return json.loads(jsontext)
 def prajson(dicio): return json.dumps(dicio, indent=4)
 
 # -----------------------------------------------------------------------
-
-
-class Produto(Base):
-    __tablename__ = 'produtos'
-    id = Column(Integer, primary_key=True)
-    dadosjson = Column(String)
-
-    def __repr__(self):
-        return f'Produto {self.id}'
-
-
-class Pedido(Base):
-    __tablename__ = 'pedidos'
-    id = Column(String, primary_key=True)
-    dadosjson = Column(String)
-
-    def __repr__(self):
-        return f'Pedido {self.id}'
-
-# -----------------------------------------------------------------------
-
 
 @app.route('/')
 def home():
@@ -60,13 +32,11 @@ def home():
 
 # -----------------------------------------------------------------------
 
-
 @app.route('/catalogo/')
 def catalogo():
     return render_template('catalogo.html')
 
 # -----------------------------------------------------------------------
-
 
 @app.route('/minhascompras/', methods=['GET'])
 def minhas_compras():
@@ -87,7 +57,6 @@ def minhas_compras():
 
 # -----------------------------------------------------------------------
 
-
 @app.route('/produtos/', methods=['GET'])
 def info_produtos():
     produtos = []
@@ -99,7 +68,6 @@ def info_produtos():
 
 # -----------------------------------------------------------------------
 
-
 @app.route('/cliente/', methods=['GET'])
 def info_cliente():
     cliente = requests.get(
@@ -107,7 +75,6 @@ def info_cliente():
     return app.make_response((cliente, 200, {'Content-Type': 'application/json'}))
 
 # -----------------------------------------------------------------------
-
 
 @app.route('/pedidos/', methods=['GET'])
 def info_pedidos():
@@ -119,7 +86,6 @@ def info_pedidos():
     return app.make_response((jsonify(pedidos), 200, {'Content-Type': 'application/json'}))
 
 # -----------------------------------------------------------------------
-
 
 @app.route('/compras/', methods=['GET'])
 def info_compras():
@@ -199,7 +165,6 @@ def info_compras():
 
 # -----------------------------------------------------------------------
 
-
 @app.route('/fazerpedido/', methods=['POST'])
 def fazer_pedido():
     # Processa pedido
@@ -221,43 +186,31 @@ def fazer_pedido():
 
 # -----------------------------------------------------------------------
 
-
 @app.route('/atualizarstatus/', methods=['POST'])
 def atualizar_status():
-    webhook = request.get_json()
-
-    try:
-        orderId = webhook['resource']['order']['id']
-        order = requests.get(
-            f'https://sandbox.moip.com.br/v2/orders/{orderId}', auth=(TOKEN, KEY)).json()
-
-        pedidos = session.query(Pedido).all()
-        for pedido in pedidos:
-            if pedido.id == orderId:
-                pedido.dadosjson = prajson(order)
-                session.commit()
-        
-    except Exception as e:
-        try:
-            paymentId = webhook['resourceId']
-            pedidos = session.query(Pedido).all()
-            for pedido in pedidos:
-                dicio = pradicio(pedido.dadosjson)
-                orderId = dicio['id']
-                if dicio['payments']:
-                    if dicio['payments'][0]['id'] == paymentId:
-                        order = requests.get(
-            f'https://sandbox.moip.com.br/v2/orders/{orderId}', auth=(TOKEN, KEY)).json()
-                        pedido.dadosjson = prajson(order)
-                        session.commit()
-
-        except Exception as e:
-            print(f'Erro: {e}')
+    resource = request.get_json()['resource']
     
-    return 'Post finalizado'
+    # Obtém ID do Pedido
+    if 'order' in resource:
+        orderId = resource['order']['id']
+    elif 'payment' in resource:
+        orderId = resource['payment']['_links']['order']['title']
+    
+    # Busca a versão atualizada
+    order = requests.get(f'https://sandbox.moip.com.br/v2/orders/{orderId}', auth=(TOKEN, KEY)).json()
+    if order.status_code >= 400:
+        return app.make_response('Falha de Obtenção do Pedido', order.status_code)
+
+    # Atualiza o banco de dados
+    pedidos = session.query(Pedido).all()
+    for i, pedido in enumerate(pedidos):
+        if pedido.id == orderId:
+            pedidos[i].dadosjson = prajson(order)
+            session.commit()
+    
+    return app.make_response('Ok', 200)
 
 # -----------------------------------------------------------------------
-
 
 if __name__ == '__main__':
     '''
