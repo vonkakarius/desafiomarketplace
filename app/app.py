@@ -40,7 +40,7 @@ def catalogo():
 
 @app.route('/minhascompras/', methods=['GET'])
 def minhas_compras():
-    try:
+    if request.args:
         orderId = request.args.get('orderId')
         order = requests.get(
             f'https://sandbox.moip.com.br/v2/orders/{orderId}', auth=(TOKEN, KEY)).json()
@@ -50,10 +50,8 @@ def minhas_compras():
             if pedido.id == orderId:
                 pedidos[i].dadosjson = prajson(order)
                 session.commit()
-    except Exception as e:
-        print(e.args)
-    finally:
-        return render_template('minhas-compras.html')
+    
+    return render_template('minhas-compras.html')
 
 # -----------------------------------------------------------------------
 
@@ -207,7 +205,7 @@ def atualizar_status():
                 pedidos[i].dadosjson = prajson(resource['order'])
             elif 'payment' in resource:
                 order = pradicio(pedidos[i].dadosjson)
-                if not order['payments']: order['payments'].apend({})
+                if not order['payments']: order['payments'].append({})
                 order['payments'][0] = resource['payment']
                 pedidos[i].dadosjson = prajson(order)
             session.commit()
