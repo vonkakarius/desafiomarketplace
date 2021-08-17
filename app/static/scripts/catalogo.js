@@ -3,7 +3,7 @@
 //  VARIÁVEIS GLOBAIS
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-let produtos = []
+let listaCarrinho = []
 let modal = document.querySelector(".apagao")
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -12,15 +12,11 @@ let modal = document.querySelector(".apagao")
 
 // Produtos
 var response = await fetch("/produtos")
-var response_produtos = await response.json()
-response_produtos.forEach((produto) => {
-  produto.qtd = 0
-  produtos.push(produto)
-})
+let produtos = await response.json()
 
 // Cliente
 var response = await fetch("/cliente").catch(erro => console.log(erro))
-var cliente = await response.json()
+let cliente = await response.json()
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 //  UTILITÁRIOS
@@ -56,23 +52,21 @@ function atualizarCarrinho() {
 
   // Reescreve
   let total = 0
-  produtos.forEach((produto) => {
-    if (produto.qtd > 0) {
-      total += produto.qtd * produto.preco
-      let item = document.createElement("div")
-      item.className = "compra-item"
-      item.innerHTML = `
-        <img src="${produto.foto}">
-        <div class="compra-item-info">
-          <p class="compra-item-nome">${produto.nome}</p>
-          <p class="valor">
-            <span class="compra-item-qtd">${produto.qtd}</span> × <span class="compra-item-valor">${rs(produto.preco)}</span> = <span class="compra-item-valortotal">${rs(produto.qtd * produto.preco)}</span>
-          </p>
-        </div>
-      `
+  listaCarrinho.forEach((produto) => {
+    total += produto.qtd * produto.preco
+    let item = document.createElement("div")
+    item.className = "compra-item"
+    item.innerHTML = `
+      <img src="${produto.foto}">
+      <div class="compra-item-info">
+        <p class="compra-item-nome">${produto.nome}</p>
+        <p class="valor">
+          <span class="compra-item-qtd">${produto.qtd}</span> × <span class="compra-item-valor">${rs(produto.preco)}</span> = <span class="compra-item-valortotal">${rs(produto.qtd * produto.preco)}</span>
+        </p>
+      </div>
+    `
 
-      document.querySelector(".compras").appendChild(item)
-    }
+    document.querySelector(".compras").appendChild(item)
   })
   document.querySelector(".compra-valortotal").textContent = rs(total)
 }
@@ -89,13 +83,29 @@ function atualizarItens(event) {
 
   // Filtro de valores
   if (qtd < 0) input.value = 0
-  qtad = Number(input.value)
+  qtd = Number(input.value)
   input.value = qtd
 
   // Atualiza quantidade
-  produtos.forEach((produto) => {
-    if (produto.nome == nome) produto.qtd = qtd
+  let atualizou = 0
+  listaCarrinho.forEach((produto) => {
+    if (produto.nome == nome) {
+      produto.qtd = qtd
+      atualizou = 1
+      listaCarrinho = listaCarrinho.filter(produto => produto.qtd > 0)
+    }
   })
+  if (atualizou == 0) {
+    if (qtd > 0) {
+      let produto = {}
+      produtos.forEach(prod => {
+        if (prod.nome == nome)
+          produto = prod
+      })
+      produto.qtd = qtd
+      listaCarrinho.push(produto)
+    }
+  }
 
   // Atualiza o carrinho
   atualizarCarrinho()
@@ -123,18 +133,15 @@ async function fazerPedido() {
     }
   }
 
-  produtos.forEach(produto => {
-    // Se o produto foi pedido
-    if (produto.qtd > 0) {
-      // Adiciona pedido
-      const item_pedido = {
-        "product": produto.sku,
-        "detail": produto.nome,
-        "quantity": produto.qtd,
-        "price": produto.preco
-      }
-      pedido.items.push(item_pedido)
+  listaCarrinho.forEach(produto => {
+    // Adiciona pedido
+    const item_pedido = {
+      "product": produto.sku,
+      "detail": produto.nome,
+      "quantity": produto.qtd,
+      "price": produto.preco
     }
+    pedido.items.push(item_pedido)
   })
 
   // Passa pro backend
